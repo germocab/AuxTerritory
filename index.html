@@ -3,25 +3,25 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gestor de Territorios</title>
-    <meta name="theme-color" content="#f5f5f7">
+    <title>Territorios Dark</title>
+    <meta name="theme-color" content="#000000">
     <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="default">
     
     <style>
         :root {
-            --apple-bg: #f5f5f7;
-            --apple-card: rgba(255, 255, 255, 0.8);
-            --apple-accent: #0071e3;
-            --apple-text: #1d1d1f;
-            --apple-gray: #86868b;
+            --apple-bg: #000000;
+            --apple-card: #1c1c1e;
+            --apple-accent: #0a84ff;
+            --apple-text: #ffffff;
+            --apple-gray: #8e8e93;
+            --apple-input: #2c2c2e;
         }
 
         * {
             box-sizing: border-box;
             margin: 0;
             padding: 0;
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
         }
 
         body {
@@ -36,96 +36,68 @@
 
         .container {
             width: 100%;
-            max-width: 500px;
-        }
-
-        header {
-            margin-bottom: 30px;
-            text-align: left;
-            width: 100%;
+            max-width: 450px;
         }
 
         header h1 {
             font-size: 34px;
             font-weight: 700;
-            letter-spacing: -0.5px;
+            margin: 20px 0 30px 5px;
         }
 
-        /* Card de Formulario */
         .card {
             background: var(--apple-card);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            border-radius: 20px;
-            padding: 24px;
-            box-shadow: 0 8px 32px rgba(0,0,0,0.05);
+            border-radius: 16px;
+            padding: 20px;
             margin-bottom: 25px;
-            border: 1px solid rgba(255,255,255,0.3);
         }
 
         .form-group {
-            margin-bottom: 15px;
+            margin-bottom: 18px;
         }
 
         label {
             display: block;
-            font-size: 12px;
+            font-size: 11px;
             font-weight: 600;
             color: var(--apple-gray);
-            margin-bottom: 5px;
+            margin-bottom: 6px;
             text-transform: uppercase;
-            padding-left: 5px;
+            letter-spacing: 0.5px;
         }
 
         select, input {
             width: 100%;
-            padding: 12px;
-            border-radius: 12px;
-            border: 1px solid #d2d2d7;
-            background: #fff;
-            font-size: 16px; /* Evita zoom automático en iOS */
+            padding: 14px;
+            border-radius: 10px;
+            border: none;
+            background: var(--apple-input);
+            color: white;
+            font-size: 16px;
             outline: none;
-            transition: border 0.3s ease;
-        }
-
-        select:focus, input:focus {
-            border-color: var(--apple-accent);
         }
 
         button {
             width: 100%;
-            padding: 14px;
+            padding: 16px;
             border-radius: 12px;
             border: none;
             background: var(--apple-accent);
             color: white;
-            font-size: 16px;
+            font-size: 17px;
             font-weight: 600;
+            margin-top: 10px;
             cursor: pointer;
-            transition: opacity 0.2s;
-        }
-
-        button:active {
-            opacity: 0.7;
-        }
-
-        /* Lista de Registros */
-        .history-title {
-            font-size: 20px;
-            font-weight: 600;
-            margin-bottom: 15px;
-            padding-left: 5px;
         }
 
         .record-item {
-            background: #fff;
-            border-radius: 15px;
-            padding: 15px;
-            margin-bottom: 10px;
+            background: var(--apple-card);
+            border-radius: 14px;
+            padding: 16px;
+            margin-bottom: 12px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.02);
         }
 
         .record-info div:first-child {
@@ -136,47 +108,46 @@
         .record-info div:last-child {
             color: var(--apple-gray);
             font-size: 14px;
+            margin-top: 2px;
         }
 
         .tag {
-            padding: 4px 10px;
-            border-radius: 20px;
+            padding: 4px 12px;
+            border-radius: 6px;
             font-size: 12px;
             font-weight: 600;
         }
 
-        .mañana { background: #e1f5fe; color: #0288d1; }
-        .tarde { background: #fff3e0; color: #ef6c00; }
+        .mañana { background: rgba(10, 132, 255, 0.15); color: #0a84ff; }
+        .tarde { background: rgba(255, 159, 10, 0.15); color: #ff9f0a; }
 
         .delete-btn {
-            color: #ff3b30;
             background: none;
-            border: none;
-            width: auto;
-            font-size: 14px;
-            padding: 5px;
+            color: #ff453a;
+            font-size: 13px;
+            margin-top: 5px;
+            text-align: right;
+            display: block;
+            width: 100%;
         }
+
+        h2 { font-size: 22px; margin: 10px 0 15px 5px; }
     </style>
 </head>
 <body>
 
     <div class="container">
-        <header>
-            <h1>Territorios</h1>
-        </header>
+        <header><h1>Territorios</h1></header>
 
         <div class="card">
             <div class="form-group">
-                <label>Número de Territorio</label>
-                <select id="territorio">
-                    </select>
+                <label>Territorio</label>
+                <select id="territorio"></select>
             </div>
-
             <div class="form-group">
-                <label>Fecha de Asignación</label>
+                <label>Fecha</label>
                 <input type="date" id="fecha">
             </div>
-
             <div class="form-group">
                 <label>Turno</label>
                 <select id="turno">
@@ -184,50 +155,36 @@
                     <option value="Tarde">Tarde</option>
                 </select>
             </div>
-
-            <button onclick="guardarRegistro()">Registrar</button>
+            <button onclick="guardarRegistro()">Guardar Registro</button>
         </div>
 
-        <h2 class="history-title">Historial</h2>
+        <h2>Historial</h2>
         <div id="listaRegistros"></div>
     </div>
 
     <script>
-        // Poblar el selector de territorios 1-36
         const selectTerritorio = document.getElementById('territorio');
         for (let i = 1; i <= 36; i++) {
             let opt = document.createElement('option');
-            opt.value = i;
-            opt.innerHTML = `Territorio ${i}`;
+            opt.value = i; opt.innerHTML = `Territorio ${i}`;
             selectTerritorio.appendChild(opt);
         }
 
-        // Establecer fecha de hoy por defecto
         document.getElementById('fecha').valueAsDate = new Date();
-
-        // Lógica de datos
         let registros = JSON.parse(localStorage.getItem('territorios_db')) || [];
 
         function guardarRegistro() {
             const territorio = document.getElementById('territorio').value;
             const fecha = document.getElementById('fecha').value;
             const turno = document.getElementById('turno').value;
+            if (!fecha) return;
 
-            if (!fecha) return alert("Selecciona una fecha");
-
-            const nuevoRegistro = {
-                id: Date.now(),
-                territorio,
-                fecha,
-                turno
-            };
-
-            registros.unshift(nuevoRegistro);
+            registros.unshift({ id: Date.now(), territorio, fecha, turno });
             actualizarUI();
             localStorage.setItem('territorios_db', JSON.stringify(registros));
         }
 
-        function eliminarRegistro(id) {
+        function eliminar(id) {
             registros = registros.filter(r => r.id !== id);
             actualizarUI();
             localStorage.setItem('territorios_db', JSON.stringify(registros));
@@ -236,25 +193,18 @@
         function actualizarUI() {
             const contenedor = document.getElementById('listaRegistros');
             contenedor.innerHTML = '';
-
             registros.forEach(r => {
-                const div = document.createElement('div');
-                div.className = 'record-item';
-                div.innerHTML = `
-                    <div class="record-info">
-                        <div>Territorio ${r.territorio}</div>
-                        <div>${r.fecha}</div>
-                    </div>
-                    <div style="display: flex; align-items: center; gap: 10px;">
+                contenedor.innerHTML += `
+                    <div class="record-item">
+                        <div class="record-info">
+                            <div>Territorio ${r.territorio}</div>
+                            <div>${r.fecha}</div>
+                            <span class="delete-btn" onclick="eliminar(${r.id})">Eliminar</span>
+                        </div>
                         <span class="tag ${r.turno.toLowerCase()}">${r.turno}</span>
-                        <button class="delete-btn" onclick="eliminarRegistro(${r.id})">Eliminar</button>
-                    </div>
-                `;
-                contenedor.appendChild(div);
+                    </div>`;
             });
         }
-
-        // Cargar datos al iniciar
         actualizarUI();
     </script>
 </body>
