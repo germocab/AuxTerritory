@@ -3,12 +3,22 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Territorios Dark</title>
-    <meta name="theme-color" content="#000000">
+    <title>Territorios Pro</title>
     <meta name="apple-mobile-web-app-capable" content="yes">
     
     <style>
         :root {
+            /* Tema Claro (Default) */
+            --apple-bg: #f5f5f7;
+            --apple-card: #ffffff;
+            --apple-accent: #0071e3;
+            --apple-text: #1d1d1f;
+            --apple-gray: #86868b;
+            --apple-input: #f2f2f7;
+        }
+
+        [data-theme="dark"] {
+            /* Tema Oscuro */
             --apple-bg: #000000;
             --apple-card: #1c1c1e;
             --apple-accent: #0a84ff;
@@ -22,6 +32,7 @@
             margin: 0;
             padding: 0;
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            transition: background-color 0.3s, color 0.3s;
         }
 
         body {
@@ -39,17 +50,36 @@
             max-width: 450px;
         }
 
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+        }
+
         header h1 {
-            font-size: 34px;
+            font-size: 30px;
             font-weight: 700;
-            margin: 20px 0 30px 5px;
+        }
+
+        /* Botón de Modo Oscuro */
+        .theme-toggle {
+            background: var(--apple-card);
+            border: 1px solid var(--apple-gray);
+            color: var(--apple-text);
+            padding: 8px 12px;
+            border-radius: 20px;
+            font-size: 14px;
+            cursor: pointer;
+            font-weight: 500;
         }
 
         .card {
             background: var(--apple-card);
-            border-radius: 16px;
-            padding: 20px;
-            margin-bottom: 25px;
+            border-radius: 18px;
+            padding: 22px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.05);
         }
 
         .form-group {
@@ -63,41 +93,40 @@
             color: var(--apple-gray);
             margin-bottom: 6px;
             text-transform: uppercase;
-            letter-spacing: 0.5px;
         }
 
         select, input {
             width: 100%;
             padding: 14px;
-            border-radius: 10px;
+            border-radius: 12px;
             border: none;
             background: var(--apple-input);
-            color: white;
+            color: var(--apple-text);
             font-size: 16px;
             outline: none;
         }
 
-        button {
+        .btn-main {
             width: 100%;
             padding: 16px;
-            border-radius: 12px;
+            border-radius: 14px;
             border: none;
             background: var(--apple-accent);
             color: white;
             font-size: 17px;
             font-weight: 600;
-            margin-top: 10px;
             cursor: pointer;
         }
 
         .record-item {
             background: var(--apple-card);
-            border-radius: 14px;
+            border-radius: 15px;
             padding: 16px;
             margin-bottom: 12px;
             display: flex;
             justify-content: space-between;
             align-items: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.03);
         }
 
         .record-info div:first-child {
@@ -108,40 +137,40 @@
         .record-info div:last-child {
             color: var(--apple-gray);
             font-size: 14px;
-            margin-top: 2px;
         }
 
         .tag {
-            padding: 4px 12px;
-            border-radius: 6px;
+            padding: 5px 12px;
+            border-radius: 8px;
             font-size: 12px;
             font-weight: 600;
         }
 
-        .mañana { background: rgba(10, 132, 255, 0.15); color: #0a84ff; }
+        .mañana { background: rgba(0, 113, 227, 0.15); color: var(--apple-accent); }
         .tarde { background: rgba(255, 159, 10, 0.15); color: #ff9f0a; }
 
         .delete-btn {
-            background: none;
             color: #ff453a;
             font-size: 13px;
-            margin-top: 5px;
-            text-align: right;
-            display: block;
-            width: 100%;
+            cursor: pointer;
+            margin-top: 8px;
+            display: inline-block;
         }
 
-        h2 { font-size: 22px; margin: 10px 0 15px 5px; }
+        h2 { font-size: 22px; margin-bottom: 15px; }
     </style>
 </head>
 <body>
 
     <div class="container">
-        <header><h1>Territorios</h1></header>
+        <header>
+            <h1>Territorios</h1>
+            <button class="theme-toggle" onclick="toggleTheme()" id="themeBtn">Modo Oscuro</button>
+        </header>
 
         <div class="card">
             <div class="form-group">
-                <label>Territorio</label>
+                <label>Número de Territorio</label>
                 <select id="territorio"></select>
             </div>
             <div class="form-group">
@@ -155,7 +184,7 @@
                     <option value="Tarde">Tarde</option>
                 </select>
             </div>
-            <button onclick="guardarRegistro()">Guardar Registro</button>
+            <button class="btn-main" onclick="guardarRegistro()">Registrar Actividad</button>
         </div>
 
         <h2>Historial</h2>
@@ -163,6 +192,25 @@
     </div>
 
     <script>
+        // --- Lógica de Temas ---
+        function toggleTheme() {
+            const body = document.body;
+            const currentTheme = body.getAttribute('data-theme');
+            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            
+            body.setAttribute('data-theme', newTheme);
+            document.getElementById('themeBtn').innerText = newTheme === 'dark' ? 'Modo Claro' : 'Modo Oscuro';
+            localStorage.setItem('theme_pref', newTheme);
+        }
+
+        // Cargar preferencia de tema
+        const savedTheme = localStorage.getItem('theme_pref');
+        if (savedTheme === 'dark') {
+            document.body.setAttribute('data-theme', 'dark');
+            document.getElementById('themeBtn').innerText = 'Modo Claro';
+        }
+
+        // --- Lógica de la App ---
         const selectTerritorio = document.getElementById('territorio');
         for (let i = 1; i <= 36; i++) {
             let opt = document.createElement('option');
@@ -185,9 +233,11 @@
         }
 
         function eliminar(id) {
-            registros = registros.filter(r => r.id !== id);
-            actualizarUI();
-            localStorage.setItem('territorios_db', JSON.stringify(registros));
+            if(confirm("¿Borrar este registro?")) {
+                registros = registros.filter(r => r.id !== id);
+                actualizarUI();
+                localStorage.setItem('territorios_db', JSON.stringify(registros));
+            }
         }
 
         function actualizarUI() {
