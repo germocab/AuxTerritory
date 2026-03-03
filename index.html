@@ -55,7 +55,6 @@
             justify-content: space-between;
             align-items: center;
             margin-bottom: 20px;
-            width: 100%;
         }
 
         header h1 { font-size: 28px; font-weight: 700; letter-spacing: -0.5px; }
@@ -71,27 +70,49 @@
             font-weight: 500;
         }
 
-        /* Sección Recomendación */
-        .rec-section {
-            background: linear-gradient(135deg, #0071e3, #5856d6);
-            border-radius: 20px;
-            padding: 22px;
+        /* Sección Recomendaciones Triple */
+        .rec-container {
             margin-bottom: 25px;
-            color: white;
-            box-shadow: 0 10px 25px rgba(0, 113, 227, 0.2);
         }
 
-        .rec-section h3 {
+        .rec-container h3 {
             font-size: 11px;
             text-transform: uppercase;
             letter-spacing: 1.2px;
-            opacity: 0.8;
-            margin-bottom: 6px;
+            color: var(--apple-gray);
+            margin-bottom: 10px;
+            padding-left: 5px;
         }
 
-        .rec-content {
+        .rec-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+        }
+
+        .rec-card {
+            background: linear-gradient(135deg, #0071e3, #5856d6);
+            border-radius: 15px;
+            padding: 15px 10px;
+            color: white;
+            text-align: center;
+            box-shadow: 0 4px 15px rgba(0, 113, 227, 0.2);
+        }
+
+        .rec-card .num {
             font-size: 20px;
-            font-weight: 700;
+            font-weight: 800;
+            display: block;
+        }
+
+        .rec-card .desc {
+            font-size: 9px;
+            opacity: 0.9;
+            margin-top: 4px;
+            display: block;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
 
         /* Card de Formulario */
@@ -124,7 +145,6 @@
             color: var(--apple-text);
             font-size: 16px;
             outline: none;
-            -webkit-appearance: none;
         }
 
         .btn-main {
@@ -137,10 +157,7 @@
             font-size: 17px;
             font-weight: 600;
             cursor: pointer;
-            transition: transform 0.1s;
         }
-
-        .btn-main:active { transform: scale(0.98); opacity: 0.9; }
 
         /* Lista Historial */
         h2 { font-size: 22px; margin-bottom: 15px; padding-left: 5px; }
@@ -153,10 +170,9 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            box-shadow: 0 2px 12px rgba(0,0,0,0.02);
         }
 
-        .record-info div:first-child { font-weight: 600; font-size: 17px; margin-bottom: 2px; }
+        .record-info div:first-child { font-weight: 600; font-size: 17px; }
         .record-info div:nth-child(2) { color: var(--apple-gray); font-size: 14px; }
 
         .tag {
@@ -175,7 +191,6 @@
             cursor: pointer;
             margin-top: 10px;
             display: inline-block;
-            font-weight: 500;
         }
     </style>
 </head>
@@ -187,9 +202,10 @@
             <button class="theme-toggle" onclick="toggleTheme()" id="themeBtn">Modo Oscuro</button>
         </header>
 
-        <div class="rec-section">
-            <h3>Recomendación</h3>
-            <div id="recomendacion" class="rec-content">Analizando registros...</div>
+        <div class="rec-container">
+            <h3>Sugerencias de Hoy</h3>
+            <div class="rec-grid" id="recGrid">
+                </div>
         </div>
 
         <div class="card">
@@ -216,25 +232,21 @@
     </div>
 
     <script>
-        // --- GESTIÓN DE TEMAS (Apple Style) ---
+        // --- TEMAS ---
         function toggleTheme() {
             const body = document.body;
-            const metaTheme = document.getElementById('nav-theme-color');
             const newTheme = body.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
-            
             body.setAttribute('data-theme', newTheme);
             document.getElementById('themeBtn').innerText = newTheme === 'dark' ? 'Modo Claro' : 'Modo Oscuro';
-            metaTheme.setAttribute('content', newTheme === 'dark' ? '#000000' : '#f5f5f7');
             localStorage.setItem('theme_pref', newTheme);
         }
 
         if (localStorage.getItem('theme_pref') === 'dark') {
             document.body.setAttribute('data-theme', 'dark');
             document.getElementById('themeBtn').innerText = 'Modo Claro';
-            document.getElementById('nav-theme-color').setAttribute('content', '#000000');
         }
 
-        // --- LÓGICA DE TERRITORIOS ---
+        // --- LÓGICA ---
         const selectTerritorio = document.getElementById('territorio');
         for (let i = 1; i <= 36; i++) {
             let opt = document.createElement('option');
@@ -242,7 +254,7 @@
             selectTerritorio.appendChild(opt);
         }
 
-        // Poner fecha de hoy sin desfase
+        // Fecha hoy local
         const hoy = new Date();
         const offset = hoy.getTimezoneOffset();
         const fechaLocal = new Date(hoy.getTime() - (offset*60*1000)).toISOString().split('T')[0];
@@ -254,16 +266,10 @@
             const n = document.getElementById('territorio').value;
             const f = document.getElementById('fecha').value; 
             const t = document.getElementById('turno').value;
-            
-            if (!f) return alert("Por favor selecciona una fecha");
+            if (!f) return;
 
-            // ELIMINAR ASIGNACIÓN ANTERIOR (Solo queda la más reciente)
             registros = registros.filter(r => r.territorio !== n);
-
-            // GUARDAR COMO STRING (Evita el error del día anterior)
             registros.unshift({ id: Date.now(), territorio: n, fecha: f, turno: t });
-            
-            // Ordenar: Más recientes arriba
             registros.sort((a, b) => b.fecha.localeCompare(a.fecha));
 
             actualizarUI();
@@ -271,7 +277,7 @@
         }
 
         function eliminar(id) {
-            if(confirm("¿Eliminar este registro permanentemente?")) {
+            if(confirm("¿Eliminar registro?")) {
                 registros = registros.filter(r => r.id !== id);
                 actualizarUI();
                 localStorage.setItem('territorios_db', JSON.stringify(registros));
@@ -283,52 +289,58 @@
             contenedor.innerHTML = '';
             
             registros.forEach(r => {
-                // CORRECCIÓN DE FECHA: Split para mostrar sin errores de zona horaria
                 const [year, month, day] = r.fecha.split('-');
-                const fechaLegible = `${day}/${month}/${year}`;
-
                 contenedor.innerHTML += `
                     <div class="record-item">
                         <div class="record-info">
                             <div>Territorio ${r.territorio}</div>
-                            <div>${fechaLegible}</div>
+                            <div>${day}/${month}/${year}</div>
                             <span class="delete-btn" onclick="eliminar(${r.id})">Eliminar</span>
                         </div>
                         <span class="tag ${r.turno.toLowerCase()}">${r.turno}</span>
                     </div>`;
             });
 
-            calcularRecomendacion();
+            calcularRecomendaciones();
         }
 
-        function calcularRecomendacion() {
-            const recEl = document.getElementById('recomendacion');
+        function calcularRecomendaciones() {
+            const grid = document.getElementById('recGrid');
+            grid.innerHTML = '';
             
-            // 1. Territorios nunca usados
-            let nuncaAsignados = [];
+            // 1. Encontrar todos los territorios del 1-36
+            let estados = [];
             for(let i=1; i<=36; i++) {
-                if(!registros.find(r => parseInt(r.territorio) === i)) {
-                    nuncaAsignados.push(i);
-                }
+                const reg = registros.find(r => parseInt(r.territorio) === i);
+                estados.push({
+                    numero: i,
+                    fecha: reg ? reg.fecha : '0000-00-00', // Nunca asignado = muy viejo
+                    label: reg ? 'Antiguo' : 'Nuevo'
+                });
             }
 
-            if(nuncaAsignados.length > 0) {
-                recEl.innerText = `Territorio ${nuncaAsignados[0]} (Prioridad: Nuevo)`;
-                return;
-            }
+            // 2. Ordenar por fecha (el más viejo primero)
+            estados.sort((a, b) => a.fecha.localeCompare(b.fecha));
 
-            // 2. Territorio con la fecha más vieja
-            let copia = [...registros].sort((a, b) => a.fecha.localeCompare(b.fecha));
-            
-            if(copia.length > 0) {
-                const [y, m, d] = copia[0].fecha.split('-');
-                recEl.innerText = `Territorio ${copia[0].territorio} (Desde ${d}/${m}/${y})`;
-            } else {
-                recEl.innerText = "No hay registros aún";
-            }
+            // 3. Tomar los 3 primeros
+            const top3 = estados.slice(0, 3);
+
+            top3.forEach(item => {
+                let subtexto = item.label === 'Nuevo' ? 'Sin asignar' : formatearFechaSimple(item.fecha);
+                grid.innerHTML += `
+                    <div class="rec-card">
+                        <span class="num">${item.numero}</span>
+                        <span class="desc">${subtexto}</span>
+                    </div>
+                `;
+            });
         }
 
-        // Carga inicial
+        function formatearFechaSimple(f) {
+            const [y, m, d] = f.split('-');
+            return `${d}/${m}`;
+        }
+
         actualizarUI();
     </script>
 </body>
